@@ -1,5 +1,6 @@
 import express, { urlencoded } from 'express';
-import cors from 'cors'
+import cors from 'cors';
+import userRouter from './routes/user.routes.js'
 import env from 'dotenv'
 env.config();
 
@@ -12,6 +13,9 @@ app.use(express.static('public'));
 app.get('/',(req,res)=>{
     res.send('true');
 });
+
+//routers-->>>
+app.use('/user',userRouter);
 
 
 export default app;

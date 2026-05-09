@@ -1,6 +1,7 @@
 import express, { urlencoded } from 'express';
 import cors from 'cors';
 import empRouter from './routes/employee.routes.js'
+import filerouter from './routes/file.route.js'
 import env from 'dotenv'
 env.config();
 
@@ -16,6 +17,8 @@ app.get('/',(req,res)=>{
 
 //routers-->>>
 app.use('/employee',empRouter);
+
+app.use('/file',filerouter);
 
 
 export default app;

@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import util from "util";
 import env from 'dotenv'
+import { ref } from 'process';
 env.config();
 
 const employeeSchema = new Schema({
@@ -21,8 +22,8 @@ const employeeSchema = new Schema({
         required: true,
     },
     officeLocation: {
-        type: String,
-        required: true,
+        type:Schema.Types.ObjectId,
+        ref:'EmpOfficeLocation'
     },
     address: {
 
@@ -38,6 +39,10 @@ const employeeSchema = new Schema({
             type: String,
             required: true,
         }
+    },
+    EmpSkills:{
+        type:Schema.Types.ObjectId,
+        ref:'EmpSkills'
     },
     refreshToken:{
         type:String,

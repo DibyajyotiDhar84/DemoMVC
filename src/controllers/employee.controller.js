@@ -2,13 +2,15 @@ import { EmpModel } from "../models/Employee.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { ApiError } from "../utils/ApiError.js";
+import { officeLocationModel } from "../models/officeLocationAddress.model.js";
+import { skillsModel } from "../models/Empskills.model.js";
 
 
 export const registeredEmp = asyncHandler(async (req, res) => {
 
-    const { fullName, email, password, officeLocation, address } = req.body;
+    const { fullName, email, password, officeLocation, address ,EmpSkills} = req.body;
 
-    if ([fullName, email, password, officeLocation].some((field) => field?.trim() === '')
+    if ([fullName, email, password, officeLocation.building, officeLocation.zip].some((field) => field?.trim() === '')
     ) {
         throw new ApiError(400, "All fields are required");
     }
@@ -19,12 +21,34 @@ export const registeredEmp = asyncHandler(async (req, res) => {
     throw new ApiError(409,"employee already exists");
    }
 
+   let officeloc = await officeLocationModel.findOne({
+        building:officeLocation.building,
+        zip:officeLocation.zip
+   });
+
+   if(!officeloc){
+    officeloc=await officeLocationModel.create(officeLocation);
+
+   }
+
+   let skillDoc = await skillsModel.findOne({
+    isPermanentEmp:EmpSkills.isPermanentEmp,
+    skillset: {$all:EmpSkills.skillset , $size:EmpSkills.skillset.length}
+   });
+
+   if(!skillDoc){
+    skillDoc=await skillsModel.create(EmpSkills);
+   }
+
+
+
    const newEmp = await EmpModel.create({
         fullName,
         email,
         password,
-        officeLocation,
-        address
+        officeLocation:officeloc._id,
+        address,
+        EmpSkills:skillDoc._id
    });
 
    const createdEmployee = await EmpModel.findById(newEmp._id).select("-password -refreshToken");
@@ -67,4 +91,6 @@ export const authenticateEmp= asyncHandler(async (req,res)=>{
    )
 
 });
+
+
 
